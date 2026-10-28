@@ -1,0 +1,7 @@
+.env
+.env.*
+node_modules/
+.vercel/
+coverage/
+*.log
+npm-debug.log*

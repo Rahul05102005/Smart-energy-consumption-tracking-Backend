@@ -1,0 +1,12 @@
+import { Router } from 'express';
+import { requireAuth } from '../auth.js';
+import { asyncRoute } from '../utils/request.js';
+import { changePassword, currentUser, forgotPassword, login, register, resetPassword } from '../controllers/auth.controller.js';
+const router = Router();
+router.post('/register', asyncRoute(register));
+router.post('/login', asyncRoute(login));
+router.get('/me', requireAuth, currentUser);
+router.post('/forgot-password', asyncRoute(forgotPassword));
+router.post('/reset-password', asyncRoute(resetPassword));
+router.patch('/password', requireAuth, asyncRoute(changePassword));
+export default router;

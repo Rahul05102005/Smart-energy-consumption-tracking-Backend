@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
 import { User, Profile, Appliance, UserSettings, Recommendation, EnergyChallenge, ApplianceUsageHistory } from './models.js';
 
 export async function connectDatabase() {
@@ -13,5 +14,29 @@ export async function connectDatabase() {
     }
     await model.createIndexes();
   }
+  await ensureDefaultUser();
   console.log(`MongoDB connected (${mongoose.connection.name}); collections ready`);
+}
+
+async function ensureDefaultUser() {
+  const email = process.env.DEFAULT_USER_EMAIL?.trim().toLowerCase();
+  const password = process.env.DEFAULT_USER_PASSWORD;
+  if (!email && !password) return;
+  if (!email || !password || password.length < 8) throw new Error('Set both DEFAULT_USER_EMAIL and a DEFAULT_USER_PASSWORD of at least 8 characters in backend/.env.');
+
+  let user = await User.findOne({ email });
+  if (!user) {
+    try {
+      user = await User.create({ name: process.env.DEFAULT_USER_NAME || 'Rahul Hariharan', email, password_hash: await bcrypt.hash(password, 12) });
+      console.log('Default user created from backend/.env.');
+    } catch (error) {
+      if (error?.code !== 11000) throw error;
+      user = await User.findOne({ email });
+    }
+  }
+  if (!user) throw new Error('Could not initialize the default user.');
+  await Promise.all([
+    Profile.updateOne({ user_id: user._id }, { $setOnInsert: { user_id: user._id, name: user.name, email: user.email } }, { upsert: true }),
+    UserSettings.updateOne({ user_id: user._id }, { $setOnInsert: { user_id: user._id } }, { upsert: true }),
+  ]);
 }

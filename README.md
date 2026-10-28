@@ -5,11 +5,11 @@ Express API for the EnergyTrack frontend, backed by MongoDB and JWT authenticati
 ## Local setup
 
 1. Install dependencies with `npm install`.
-2. Put the required values directly in `.env`: `PORT`, `MONGODB_URI`, `MONGODB_DB_NAME`, `JWT_SECRET` (at least 32 random characters), `JWT_EXPIRES_IN`, and `CLIENT_URL`. Set the optional `RESET_TOKEN_EXPIRES_MINUTES` and SMTP variables if you want password recovery emails.
+2. Put the required values directly in `.env`: `PORT`, `MONGODB_URI`, `MONGODB_DB_NAME`, `JWT_SECRET` (at least 32 random characters), `JWT_EXPIRES_IN`, and `CLIENT_URL`. Set `DEFAULT_USER_NAME`, `DEFAULT_USER_EMAIL`, and `DEFAULT_USER_PASSWORD` to create the initial login when that email is absent. Set the optional `RESET_TOKEN_EXPIRES_MINUTES` and SMTP variables if you want password recovery emails.
 3. Start MongoDB or configure `MONGODB_URI` for your Atlas cluster.
 4. Start the API with `npm run dev`.
 
-On startup, the API creates its MongoDB collections and indexes if they do not exist. Collection schemas are based on the migration references in `schema/migrations/`.
+On startup, the API creates its MongoDB collections and indexes if they do not exist. When the default-user variables are set, it creates that user, profile, and settings if absent; normal startup does not reset an existing user's password. Run `npm run seed:default` to explicitly align the configured default user's password. Collection schemas are based on the migration references in `schema/migrations/`.
 
 ## API routes
 

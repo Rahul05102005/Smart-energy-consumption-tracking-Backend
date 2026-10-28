@@ -8,7 +8,7 @@ import challengeRoutes from './routes/challenges.routes.js';
 import recommendationRoutes from './routes/recommendations.routes.js';
 
 const app = express();
-app.use(cors({ origin: (process.env.CLIENT_URL || 'http://localhost:5173').split(',').map((origin) => origin.trim()), credentials: true }));
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json({ limit: '1mb' }));
 app.get('/api/health', (_req, res) => res.json({ status: 'ok', service: 'energytrack-api' }));
 app.use('/api/auth', authRoutes);
